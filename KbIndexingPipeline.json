@@ -1,0 +1,204 @@
+{
+  "name": "Kb Indexing Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7ae1a138-21fd-41b0-a685-7e4afdfa10c7",
+      "name": "Execute workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a58bfa4-22a8-4c86-972c-7b7984d051e1",
+              "name": "text",
+              "value": "ERRO: Rejeição: Base de cálculo de ICMS ST difere do somatório dos itens  CÓDIGO: — CAUSA: O item possui ST/CSOSN que calcula ICMS ST, mas o % de IVA não foi informado. SOLUÇÃO: Abrir a nota, localizar o item, acessar \"Tributos\", ajustar o campo e tentar transmitir novamente. ##END##  ERRO: Rejeição 660: CFOP de Combustível e não informado grupo de combustível da NF-e  CÓDIGO: 660 CAUSA: O CFOP do item é de combustível, mas o código ANP não foi cadastrado. SOLUÇÃO: No cadastro do item, inserir o código ANP. Se o campo não estiver visível, ativar em: Sistema > Configurações gerais > Produtos > \"Exibir o código da ANP...\". ##END##  ERRO: Rejeição 203 ou 245: Emitente não habilitado para emissão de NF-e / CNPJ não cadastrado  CÓDIGO: 203 ou 245 CAUSA: Empresa não está habilitada para emitir NF-e. SOLUÇÃO: Contatar o contador para validar a habilitação da empresa. ##END##  ERRO: Rejeição 694: Não informado o grupo de ICMS para a UF de destino  CÓDIGO: 694 CAUSA: Falta de informação sobre a alíquota interna de ICMS para clientes físicos ou jurídicos não contribuintes. SOLUÇÃO: No cadastro do produto, aba \"Nota Fiscal\", informar a alíquota interna do estado do destinatário. Se persistir, remover e reinserir o item na nota. Para clientes isentos, deixar o campo IE em branco. ##END##  ERRO: Rejeição 539: Duplicidade de NF-e com diferença na Chave de Acesso  CÓDIGO: 539 CAUSA: A NF-e já existe na SEFAZ, mas com diferença na chave de acesso. SOLUÇÃO: Consultar a chave de acesso no Portal da NF-e. Se for a mesma nota do sistema, contatar o suporte para ajuste. Se for outra nota, ajustar os dados no sistema para ficar igual à da SEFAZ e então chamar o suporte. ##END##  ERRO: Rejeição 600: CSOSN incompatível na operação com Não Contribuinte  CÓDIGO: 600 CAUSA: Foi informado um CSOSN incompatível ou o cadastro do cliente está incorreto. SOLUÇÃO: Evitar CSOSN incompatíveis (ex: 101/201/202/900) para não contribuintes. Validar se o cliente é contribuinte (jurídico com IE) e ajustar o cadastro corretamente. ##END##  ERRO: Rejeição 388: Código de Situação Tributária do IPI incompatível com o Código de Enquadramento Legal do IPI  CÓDIGO: 388 CAUSA: Código de enquadramento do IPI incorreto para a operação. SOLUÇÃO: Verificar com o contador o código correto e ajustá-lo na aba \"IPI\" do produto. ##END##  ERRO: Rejeição 817: Unidade Tributável incompatível com o NCM informado na operação com Comércio Exterior  CÓDIGO: 817 CAUSA: Unidade de medida do produto divergente do NCM. SOLUÇÃO: Ajustar a unidade de medida no cadastro do produto conforme consta no NCM, excluir o item da nota e incluí-lo novamente. ##END##  ERRO: Rejeição 696: Operação com não contribuinte deve indicar operação com consumidor final  CÓDIGO: 696 CAUSA: O campo \"Consumidor final\" foi marcado como NÃO, mas deveria ser SIM. SOLUÇÃO: Alterar essa configuração para SIM e retransmitir a nota. ##END##  ERRO: Rejeição 328: CFOP de devolução de mercadoria para NF-e que não tem finalidade de devolução  CÓDIGO: 328 CAUSA: A finalidade da emissão não foi ajustada corretamente. SOLUÇÃO: Acessar Faturamento > Tipo de Nota, localizar o tipo de nota usado e alterar a finalidade para \"Devolução\". ##END##  ERRO: Rejeição 972: Obrigatória as informações do responsável técnico  CÓDIGO: 972 CAUSA: Falta de identificação do responsável técnico no XML da NF-e. SOLUÇÃO: Ativar a opção \"Incluir identificação do responsável técnico no XML\" em Sistema > Configurações gerais > Nota Fiscal Eletrônica, aba Notas técnicas ##END##  ERRO: Rejeição 656: Consumo Indevido  CÓDIGO: 656 CAUSA: Muitas tentativas de envio em um curto período. SOLUÇÃO: Aguardar um tempo e tentar novamente. ##END##  ERRO: Rejeição 232: IE do destinatário não informada  CÓDIGO: 232 CAUSA: Inscrição Estadual do destinatário não foi informada ou está incorreta. SOLUÇÃO: Validar a IE no site do SINTEGRA (www.sintegra.gov.br ), ajustar no cadastro do cliente e selecionar novamente o cliente na nota antes de transmitir. ##END##  ERRO: Rejeição 531: Total da BC ICMS difere do somatório dos itens  CÓDIGO: 531 CAUSA: Algum campo de ICMS não foi informado corretamente. SOLUÇÃO: Verificar e preencher corretamente os campos de Alíquota, Base de ICMS e Valor. ##END##  ERRO: Rejeição 695: Informado indevidamente o grupo de ICMS para a UF de destino  CÓDIGO: 695 CAUSA: O cliente foi informado como isento, mas o grupo de ICMS foi preenchido incorretamente. SOLUÇÃO: Se o cliente for isento, deixar o campo em branco. ##END##  ERRO: Rejeição 321: NF-e de devolução de mercadoria não possui documento fiscal referenciado  CÓDIGO: 321 CAUSA: Falta de referência à nota de origem. SOLUÇÃO: Informar a chave de acesso da NF-e de origem na aba \"Notas Referenciadas\". ##END##  ERRO: Rejeição 629: Valor do Produto difere do produto Valor Unitário de Comercialização e Quantidade Comercial  CÓDIGO: 629 CAUSA: Divergência entre quantidade, valor unitário e total do item. SOLUÇÃO: Abrir a nota, dar duplo clique no item e clicar em \"Alterar\" para que o sistema recalcule os valores corretamente. ##END##  ERRO: Rejeição 284: Certificado Transmissor revogado  CÓDIGO: 284 CAUSA: Normalmente a Revogação de certificados ocorre em caso de roubo, renovação (o anterior em uso foi revogado) ou porque não será mais utilizado. SOLUÇÃO: Deve-se verificar o motivo pelo qual o Certificado Transmissor foi revogado e substituí-lo por um válido / ativo. ##END##  ERRO: Rejeição 204: Duplicidade de NF-e [nRec:999999999999999]  CÓDIGO: 204 CAUSA: a numeração da nota, já foi utilizado em outro momento SOLUÇÃO: Entrar em contato com o suporte. ##END##  ERRO: Rejeição 205: NF-e está denegada na base de dados da Sefaz  CÓDIGO: 205 CAUSA: Existe pendencias fiscais com o destinatário ou emitente SOLUÇÃO: A nota em si, só será transmitida uma nova, quando for tratado a pendência, mas é possível entrar em contato com o suporte, para podermos alterar o status da nota e assim poder inutilizar. ##END##  ERRO: Rejeição 327: CFOP inválido para Nota Fiscal com finalidade de devolução de mercadoria  CÓDIGO: 327 CAUSA: CFOP não é próprio para a finalidade de devolução SOLUÇÃO: Acessar Faturamento > Tipo de Nota, localizar o tipo de nota usado e alterar a finalidade para \"Normal\" ou verificar se o CFOP utilizado está correto. ##END##  ERRO: Erro 234 - Rejeição: IE do destinatário não vinculada ao CNPJ  CÓDIGO: 234 CAUSA: A Inscrição Estadual informada não é válida para o CNPJ. SOLUÇÃO: Abrir a nota, clicar sobre o nome do cliente, pressionar F5 para alterar o cadastro e corrigir a Inscrição Estadual. Valide a inscrição no site: www.sintegra.gov.br . ##END##  ERRO: Erro 701 - Rejeição: Não informado Nota Fiscal referenciada (CFOP de Exportação Indireta) [nItem: nnn]  CÓDIGO: 701 CAUSA: A NF-e foi emitida com CFOP 5.929 ou 6.929, mas sem documento referenciado. SOLUÇÃO: Acesse a aba \"Notas Referenciadas\", informe a chave de acesso do cupom fiscal e clique em Adicionar. ##END##  ERRO: Erro 733 - Rejeição: CFOP de operação interna e idDest <>  CÓDIGO: 733 CAUSA: CFOP de dentro do estado (iniciado em 5) foi usado para um destinatário fora do estado. SOLUÇÃO: Alterar o CFOP para um código iniciado em 6. ##END##  ERRO: Erro 611 - Rejeição: GTIN (cEAN) inválido [nItem: 999]  CÓDIGO: 611 CAUSA: O GTIN informado no item está incorreto. SOLUÇÃO: Editar o cadastro do item, corrigir os campos GTIN e GTIN embalagem, garantindo que o código de barras seja válido ou deixar o campo em branco. Reinsira o item na nota. ##END##  ERRO: Erro 547 - Rejeição: Chave de Acesso referenciada com Dígito Verificador inválido [nOcor: nnn]  CÓDIGO: 547 CAUSA: Chave de acesso informada incorretamente na aba Nota Referenciada. SOLUÇÃO: Excluir a chave informada e inserir novamente corretamente. ##END##  ERRO: Erro 778 - Rejeição: Informado NCM inexistente [nItem: nnn]  CÓDIGO: 778 CAUSA: O NCM informado não é mais válido na SEFAZ. SOLUÇÃO: Atualizar o NCM do produto para um código válido e reinsira o item na nota. ##END##  ERRO: Erro 519 - Rejeição: CFOP de saída para NF-e de entrada  CÓDIGO: 519 CAUSA: CFOP de saída foi utilizado em uma nota de entrada. SOLUÇÃO: Se a nota for realmente de saída, acesse 4) Faturamento > Tipos de Nota, edite o tipo de nota e altere o campo \"Tipo\" para Saída. Depois, troque o tipo de nota no sistema e regrave antes de transmitir. ##END##  ERRO: Erro 518 - Rejeição: CFOP de entrada para NF-e de saída  CÓDIGO: 518 CAUSA: CFOP de entrada foi utilizado em uma nota de saída. SOLUÇÃO: Se a nota for de entrada, acesse 4) Faturamento > Tipos de Nota, edite o tipo de nota e altere o campo \"Tipo\" para Entrada. Depois, troque o tipo de nota no sistema e regrave antes de transmitir. ##END##  ERRO: Erro 481 - Rejeição: Código Regime Tributário do emitente diverge do cadastro na SEFAZ  CÓDIGO: 481 CAUSA: O regime tributário cadastrado na empresa não corresponde ao registrado na SEFAZ. SOLUÇÃO: Consulte o contador para validar o regime correto e entre em contato com o suporte para ajustes. ##END##  ERRO: Erro 745 - Rejeição: NF-e sem grupo do PIS  CÓDIGO: 745 CAUSA: Código do PIS não foi informado. SOLUÇÃO: Alterar o PIS no cadastro do item ou diretamente na nota, na opção \"Tributos\", conforme código fornecido pelo contador. ##END##  ERRO: Erro 213 - Rejeição: CNPJ-Base do Emitente difere do CNPJ-Base do Certificado Digital  CÓDIGO: 213 CAUSA: O CNPJ selecionado na emissão da nota é diferente do CNPJ do certificado digital. SOLUÇÃO: No Windows, instale o certificado correspondente ao CNPJ correto e, no sistema, vá para 4) Faturamento > Notas Fiscais > Certificados e selecione o certificado correto. ##END##  ERRO: Selecione uma forma de pagamento com o número de parcelas entre 0 e 0  CÓDIGO: — CAUSA: Erro ocorre ao inserir a forma de pagamento na nota. SOLUÇÃO: Acesse 1) Sistema > Configurações Gerais > Notas Fiscais, vá para Passo 2 de 7 e ajuste o campo Parcelamento máximo para NF para o número máximo permitido ou 99. ##END##  ERRO: Não foi possível calcular o relatório! Motivo: Page Header band is too large to fit on page.  CÓDIGO: — CAUSA: A impressora não suporta o tamanho da página da DANFE. SOLUÇÃO: Vá em Impressoras e Scanners e defina a impressora correta como padrão no Windows. ##END##  ERRO: Não foi possível gerar o arquivo XML da NF-e! Motivo: Não existe nenhum certificado válido!  CÓDIGO: — CAUSA: O sistema não encontrou um certificado digital válido. SOLUÇÃO: Acesse 4) Faturamento > Notas Fiscais > Certificados, selecione um certificado válido e tente emitir a nota novamente. ##END##  ERRO: Não foi possivel transmitir a nota fiscal eletronica! Motivo: Rejeicao: cEAN invalido  CÓDIGO: — CAUSA: — SOLUÇÃO: corrigir o campo do código gtin do produto ##END##  ERRO: Erro de operação ilegal com a mensagem: Invalid path or file name.  CÓDIGO: — CAUSA: — SOLUÇÃO: Corrigir o caminho que esta nas configurações dos arquivos fiscais em: 1)sistemas > config gerais > exportação dos arquivos fiscais ##END##  ERRO: Não foi possível gerar o arquivo XML da nota fiscal eletrônica! Motivo: Dados do contabilista da empresa não foi informado.  CÓDIGO: — CAUSA: Dados do contabilista da empresa não foi informado. SOLUÇÃO: Caso o cliente nao queira informar o contador na nf-e, desativar essa configuração em: 1)sistemas > config gerais > Inserir contabilista na lista de autorizados para download da nf-e ##END##  ERRO: Não foi possível gerar NFe! Motivo: Não foi possível assinar o arquivo XML.  CÓDIGO: — CAUSA: Caracteres especiais no arquivo XML Certificado digital não instalado corretamente neste computador Certificado digital não configurado corretamente no sistema Arquivo MSXML5.DLL não instalado corretamente ou alguns de seus componentes não foram registrados Arquivo CAPICOM.DLL não instalado corretamente ou alguns de seus componentes não foram registrados Realizar a importação e posteriormente a exportação do certificado em uma máquina com Windows XP Mensagem: OLE IDispatch exception code 0 from mscorlib: Tipo de provedor inválido especificado. .. / Linha: 225 / Programa: ft_assinarnfe SOLUÇÃO:  Caso cliente tenha certificado A3 com sistema na versão mais recente, verificar se o certificado esta assinando fora do sistema, se estiver, em desativar as seguintes opções: assinar utilizando o novo protocolo e ``utilizar certificado em todas as comunicações```. Caso o sistema esteja na versão 19.3 rodar o seguinte comando no CMD executado como Administrador: C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\RegAsm.exe \"C:\\acsn\\dll\\SignXML.dll\"/codebase  Caso seja um certificado digital, verificar se o certificado esta valido. Caso esteja valido, setar ele novamente em 4) faturamento > nota fiscal> no menu esquerdo \"certificados\"> selecionar o certificado novamente  Verificar se existem caracteres especiais no xml da nota no seguinte site https://codebeautify.org/xmlvalidator  ##END##  ERRO: INNOTAFISCGR.FBUTTON1.CLICK - Field NFVLFCP does not accept null values.  CÓDIGO: — CAUSA: — SOLUÇÃO: Se for uma nota de devolução, alterar o campo consumidor final como \"NAO\" ##END##  ERRO: Não foi possível transmitir a nota fiscal eletrônica! Motivo: Rejeicao: Nao informada vBCSTRet, pST, vICMSSubstituto e vICMSSTRet [nItem: 1]  CÓDIGO: — CAUSA: — SOLUÇÃO: Por ser nota de devolu;cao com cliente com regime tributário Simples Nacional, nas configurações do tipo de nota, alterar o campo \"personalizar valores\" como \"SIM\" e alterado o CSOSN do produto para 900. ##END##  ERRO: 660 - Rejeicao: CFOP de Combustivel e nao informado grupo de combustivel da NF-e  CÓDIGO: 660 CAUSA: — SOLUÇÃO: Instalei o especifico NotaFiscal_v8.19.3_v8.0.0 e relancei os itens na nota. ##END##  ERRO: Não foi possível acessar Notas Fiscais! Motivo: As observações automáticas não estão configuradas.  CÓDIGO: — CAUSA: As observações automáticas não estão configuradas. SOLUÇÃO: Como cliente possui SPED, configuramos as observações automáticas em 4) faturamento > observações automáticas ##END##  ERRO: Não foi possível gravar a Nota Fiscal! Motivo: Impossível ratear o desconto entre os itens!  CÓDIGO: — CAUSA: Impossível ratear o desconto entre os itens! SOLUÇÃO: Nas configurações do tipo de nota alterei o \"personalizar valores\" como \"não\", fechamos a nota e lançamos novamente. ##END##  ERRO: Não foi possível transmitir a nota fiscal eletrônica! Motivo: Rejeicao: IE do substituto tributario identica a IE do emitente ou do destinatario  CÓDIGO: — CAUSA: IE do substituto tributario identica a IE do emitente ou do destinatario SOLUÇÃO: Verifiquei que no cadastro da empresa, na aba de SPED, o cliente inseriu o mesmo IE pra o estado dele. Removemos essa incricao estadual. ##END##  ERRO: Rejeição 815: Valor do ICMS Interestadual para UF de Destino difere do calculado [nItem:999] (Valor Informado: XXX, Valor Calculado:XXX)  CÓDIGO: 815 CAUSA: O específico de Nota Fiscal foi instalado, porém o tipo de cálculo não foi devidamente configurado. SOLUÇÃO: Acessar Sistema > Configurações Gerais > Nota Fiscal Eletrônica. Na aba Cálculo, configurar o cálculo do FCP/DIFAL para cada UF. Preencher todos os estados com a opção: 2 - Cálculo por fora (base única e FCP não compõe a base). Reabrir a nota fiscal e realizar a transmissão novamente. ##END##  ERRO: Rejeição 337: CFOP inválido para emitente MEI (CRT=4)  CÓDIGO: 337 CAUSA: Ocorre quando o CFOP utilizado na nota fiscal não é compatível com o regime tributário MEI ou quando o código fiscal não está entre os permitidos para o CRT = 4. SOLUÇÃO: Para empresas enquadradas como MEI, devem ser utilizados apenas CFOPs específicos para esse regime, conforme o CSOSN: CSOSN: 102 - Permite apenas os CFOP: 5102 e 6102. CSOSN: 900 - Permite uma variedade maior de CFOPs, como: 1202, 1904, 2202, 2904, 5202, 5904, 6202, 6904, 1501 a 1553 / 2501 a 2553, 5501, 5502, 5504, 5505, 5551, 5933, 6501, 6502. ##END##",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7dad0962-e87e-4544-b64b-c83cea41dc12",
+      "name": "Prepare Knowledge Base Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fullTextRaw = $input.first().json.text || \"\";\nconst fullText = fullTextRaw.replace(/\\\\n/g, \"\\n\");\n\nconst blocks = fullText\n  .split(\"##END##\")\n  .map(b => b.trim())\n  .filter(Boolean);\n\nreturn blocks.map(block => {\n\n  const erro = block.match(/ERRO:\\s*(.*)/i)?.[1] || \"\";\n  const codigo = block.match(/CÓDIGO:\\s*(\\d+)/i)?.[1] || null;\n  const causa = block.match(/CAUSA:\\s*(.*)/i)?.[1] || \"\";\n  const solucao = block.match(/SOLUÇÃO:\\s*(.*)/i)?.[1] || \"\";\n\n  const content = `\nRejeição ${codigo} da SEFAZ.\nErro: ${erro}\nCausa: ${causa}\nSolução: ${solucao}\n`.trim();\n\n  return {\n    json: {\n      codigo,\n      erro,\n      causa,\n      solucao,\n      content\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "8f23dca6-a17c-421d-b00e-b379d0a696a4",
+      "name": "Text Preprocessing – Chunk Generator"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {},
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "text-embedding-3-small"
+            },
+            {
+              "name": "input",
+              "value": "={{$json.content}}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        704,
+        0
+      ],
+      "id": "aa63c69d-9e9e-4b0c-9923-c992c9940516",
+      "name": "Embedding Service – OpenAI API",
+      "credentials": {
+        "openAiApi": {
+          "id": "ksvv11WEivM8kbPZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const embeddingsItems = $input.all(); // itens que vêm do HTTP (OpenAI)\nconst chunksItems = $items(\"Text Preprocessing – Chunk Generator\");\n\nconst now = new Date().toISOString();\n\nreturn embeddingsItems.map((embItem, i) => {\n  const chunk = chunksItems[i]?.json ?? {};\n  const embedding = embItem.json?.data?.[0]?.embedding ?? null;\n\n  return {\n    json: {\n      codigo: chunk.codigo ?? null,\n      erro: chunk.erro ?? null,\n      causa: chunk.causa ?? null,\n      solucao: chunk.solucao ?? null,\n      content: chunk.content ?? null,\n      embedding,\n      createdAt: now,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "d5acc546-59af-4aaa-8224-e3410873bee7",
+      "name": "Format Embedding Vector"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "kb_chunks",
+        "fields": "codigo, erro, causa, solucao, content, embedding, createdAt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "645becac-e2bd-4436-b71b-eda967ccbeb5",
+      "name": "Store Vectors in Database",
+      "credentials": {
+        "mongoDb": {
+          "id": "O7rS4iR5ZlB4AQSP",
+          "name": "MongoDB account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute workflow": {
+      "main": [
+        [
+          {
+            "node": "Prepare Knowledge Base Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Knowledge Base Input": {
+      "main": [
+        [
+          {
+            "node": "Text Preprocessing – Chunk Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Preprocessing – Chunk Generator": {
+      "main": [
+        [
+          {
+            "node": "Embedding Service – OpenAI API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embedding Service – OpenAI API": {
+      "main": [
+        [
+          {
+            "node": "Format Embedding Vector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Embedding Vector": {
+      "main": [
+        [
+          {
+            "node": "Store Vectors in Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "64180fdf-3180-4f32-8abb-57f8e56cec07",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab6f0f8deab02716aed7cfd739a9993092e0f16d4cc954a0e35f6653f3e47953"
+  },
+  "id": "RkDNFwEMcF0Ub9nI",
+  "tags": []
+}

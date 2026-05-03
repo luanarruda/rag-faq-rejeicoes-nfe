@@ -1,0 +1,289 @@
+{
+  "name": "FaqSupport - Query",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "faq",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "244673bc-c808-4241-ba6b-1130ab22f283",
+      "name": "[API] Receive User Question",
+      "webhookId": "7f2b945b-9b34-4e44-83af-cae1a667ea7e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88ce5458-7371-4bbb-9c64-184565913542",
+              "name": "question",
+              "value": "={{$json.body.question}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9d592e15-b0d7-42b3-9c34-19c22af732f0",
+      "name": "[Input] Normalize User Question"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "text-embedding-3-small"
+            },
+            {
+              "name": "input",
+              "value": "={\n  \"model\": \"text-embedding-3-small\",\n  \"input\": \"{{$json.question}}\"\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        0
+      ],
+      "id": "3bc2c304-702a-4470-b45d-17d890815f0b",
+      "name": "[Embedding] Generate Question Vector",
+      "credentials": {
+        "openAiApi": {
+          "id": "ksvv11WEivM8kbPZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const embedding = $json.data?.[0]?.embedding || [];\n\nreturn {\n  pipeline: [\n    {\n      $vectorSearch: {\n  index: \"vector_index\",\n  path: \"embedding\",\n  queryVector: embedding,\n  numCandidates: 30,\n  limit: 4\n}\n},\n{\n  $project: {\n    _id: 0,\n    erro: 1,\n    causa: 1,\n    solucao: 1,\n    score: { $meta: \"vectorSearchScore\" }\n  }\n}\n  ],\n  question: $node[\"[Input] Normalize User Question\"].json.question\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "46f9b05f-e7f0-4e21-ab23-9845208c69b4",
+      "name": "[Mongo] Build Vector Search Pipeline"
+    },
+    {
+      "parameters": {
+        "operation": "aggregate",
+        "collection": "kb_chunks",
+        "query": "={{ JSON.stringify($json.pipeline) }}"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "cb135aad-8043-4433-9c20-a4c1f8468ad0",
+      "name": "[Context] Aggregate Knowledge Results",
+      "credentials": {
+        "mongoDb": {
+          "id": "O7rS4iR5ZlB4AQSP",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const docs = $input.all()\n  .slice(0, 3)\n  .map((item, index) => {\n    const doc = item.json;\n\n    const codigo = doc.codigo ?? doc.rejeicao ?? \"\";\n    const erro = doc.erro ?? \"\";\n    const causa = doc.causa ?? \"\";\n    const solucao = doc.solucao ?? \"\";\n\n    const partes = [`Resultado ${index + 1}`];\n\n    if (codigo) partes.push(`Código: ${codigo}`);\n    if (erro) partes.push(`Erro: ${erro}`);\n    if (causa && causa !== \"—\") partes.push(`Causa: ${causa}`);\n    if (solucao && solucao !== \"—\") partes.push(`Solução: ${solucao}`);\n\n    return partes.join(\"\\n\");\n  })\n  .filter(texto => texto.trim() !== \"\");\n\nreturn [\n  {\n    json: {\n      context: docs.join(\"\\n\\n\"),\n      question: $node[\"[Input] Normalize User Question\"].json.question,\n      source: docs.length ? \"vector\" : \"no_match\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "ea0a3fcb-4490-4178-a651-527c054e2a76",
+      "name": "[Prompt] Build AI Context"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-4o-mini"
+            },
+            {
+              "name": "temperature",
+              "value": "={{0}}"
+            },
+            {
+              "name": "messages",
+              "value": "={{\n[\n  {\n    role: \"system\",\n    content: `Você é um especialista em rejeições de NF-e, NFC-e e CT-e.\n\nResponda SOMENTE com base no contexto fornecido.\n\nObjetivo:\nEntregar uma resposta útil, direta e técnica, explicando o erro, trazendo as possíveis causas e as possíveis soluções de forma mais completa e fiel ao contexto.\n\nFormato da resposta:\nO erro ocorre quando: [explique de forma objetiva o que significa a rejeição ou erro]\n\nPossíveis causas:\n- [explique uma causa real e específica]\n- [explique outra causa real e específica]\n- [explique outras, se existirem no contexto]\n\nComo resolver:\n- [ação concreta, dizendo o que fazer e onde fazer]\n- [outra ação concreta]\n- [outras soluções, se existirem no contexto]\n\nRegras:\n- Não use os títulos \"Resumo\" nem \"Categorias\"\n- Não invente informações que não estejam no contexto\n- Não repita a pergunta do usuário\n- Não dê resposta genérica\n- Não escreva causas vagas como \"campo preenchido incorretamente\" sem explicar qual campo ou situação\n- Sempre que o contexto permitir, detalhe o máximo possível quais campos, cadastros, parâmetros ou dados da nota podem causar o problema\n- Sempre que o contexto permitir, detalhe ações práticas de correção dentro do sistema, cadastro do produto, cliente, tributos, item, nota ou parametrização\n- Se houver tags XML, campos, nomes técnicos ou exemplos no contexto, cite-os na resposta\n- Não orientar definição fiscal definitiva, tributária ou contábil; apenas explique o erro e o que revisar/corrigir tecnicamente\n- Se o contexto for insuficiente, responda exatamente: \"Não encontrei informações suficientes para responder com precisão.\"`\n  },\n  {\n    role: \"user\",\n    content: `Contexto:\n${$json.context}\n\nPergunta:\n${$json.question}`\n  }\n]\n}}"
+            },
+            {
+              "name": "max_tokens",
+              "value": "={{250}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1552,
+        0
+      ],
+      "id": "d73ac420-6faf-4dba-9345-d13e9ac82f22",
+      "name": "[LLM] Generate Final Answer",
+      "credentials": {
+        "openAiApi": {
+          "id": "ksvv11WEivM8kbPZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "554b8a32-1a8a-4d24-a09e-0db554f4ae47",
+              "name": "answer",
+              "value": "={{$json.choices[0].message.content}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        0
+      ],
+      "id": "56fd2393-95a7-4936-aa57-1de942159f62",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "[API] Receive User Question": {
+      "main": [
+        [
+          {
+            "node": "[Input] Normalize User Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Input] Normalize User Question": {
+      "main": [
+        [
+          {
+            "node": "[Embedding] Generate Question Vector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Embedding] Generate Question Vector": {
+      "main": [
+        [
+          {
+            "node": "[Mongo] Build Vector Search Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Mongo] Build Vector Search Pipeline": {
+      "main": [
+        [
+          {
+            "node": "[Context] Aggregate Knowledge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Context] Aggregate Knowledge Results": {
+      "main": [
+        [
+          {
+            "node": "[Prompt] Build AI Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Prompt] Build AI Context": {
+      "main": [
+        [
+          {
+            "node": "[LLM] Generate Final Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[LLM] Generate Final Answer": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fe982146-a459-48bf-adfd-057d63d0985d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab6f0f8deab02716aed7cfd739a9993092e0f16d4cc954a0e35f6653f3e47953"
+  },
+  "id": "IV3yvqid9IrkUazO",
+  "tags": []
+}
